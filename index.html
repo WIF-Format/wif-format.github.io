@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIF Format — Weaving Information File</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #222;
+            background: #fff;
+        }
+
+        header {
+            border-bottom: 1px solid #e5e5e5;
+            padding: 1rem 0;
+            <!--margin-bottom: 2rem;-->
+        }
+
+        header .inner {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header h1 {
+            font-size: 25px;
+            font-weight: 600;
+            color: #111;
+      
+        }
+
+        
+        main {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111;
+           <!-- margin-bottom: 1rem;-->
+            <!--padding-bottom: 0.5rem;-->
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .spec-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            background: #2a6db5;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .spec-link:hover {
+            background: #1f5490;
+        }
+
+        .meta {
+            font-size: 14px;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+
+        .apps-list {
+            list-style: none;
+            margin: 0.5rem 0;
+        }
+
+        .apps-list li {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .apps-list li:last-child {
+            border-bottom: none;
+        }
+
+        footer {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            border-top: 1px solid #e5e5e5;
+            text-align: center;
+            font-size: 13px;
+            color: #999;
+        }
+
+        footer .inner {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="inner">
+            <img src="detailscarf2.jpg" text-align:="" center="" width="760" height="200">
+
+            <h1>WIF Format</h1>
+            <p>The open standard for weaving draft interchange: <b>wif-format.org</b></p>
+        </div>
+    </header>
+
+    <main>
+
+        <section>
+            <h2>What is the WIF format?</h2>
+            <p>
+                The Weaving Information File (.wif) is an open file format for storing and exchanging
+                weaving drafts. It was created in the early 1990s by a committee of weaving software
+                developers who recognized the need for a common format that would allow weavers to
+                share their work across different applications.
+            </p>
+            <p>
+                A .wif file describes everything needed to reproduce a weaving draft — threading,
+                tieup, treadling, colors, and weave structure  —in a plain text, human-readable format
+                that any compliant application can read and write.
+            </p>
+        </section>
+
+        <section>
+            <h2>History</h2>
+            <p>
+                The WIF format has been in continuous use for over 30 years. It was designed by
+                consensus among the developers of the major weaving software applications of the time,
+                with the goal of ensuring that weavers would never be locked into a single application.
+            </p>
+            <p>
+                Today the format is supported by all major weaving software on macOS, Windows, and iOS,
+                and is used by handweaving.net to distribute a library of over thousand of weaving drafts.
+                Computerized loom manufacturers also support WIF as the standard format for driving
+                their looms directly from weaving software.
+            </p>
+        </section>
+
+        <section>
+            <h2>The WIF specification</h2>
+            <p>
+                The full WIF format specification documents the structure of .wif files,
+                all supported sections and fields, and the rules for compliant implementations.
+            </p>
+            <a class="spec-link" href="http://www.tantradharma.com/maplehill/wif/wif.html" target="_blank">Download the WIF specification</a>
+            <p class="meta">http://www.tantradharma.com/maplehill/wif/wif.html</p>
+        </section>
+
+        
+
+        <section>
+
+
+            <h2>The wif File Extension</h2>
+            <p>The extension .wif is used to type a file that uses the WIF format.</p>
+
+            <p>
+                On Windows, file associations are
+                registry entries. There are no restrictions so extensions can easily be shared. Developers
+                can write file with the specified contents and save it.
+            </p>
+
+            <p>
+                Browser Apps can also post a file in the wif format for download and not worry
+                about who can read it.  Users can save the files to their computer and open in the weaving app
+                of their choice.
+            </p>
+            <p>
+                Apps for looms that have their own processor also doesn't have any issues as their app will
+                always be the only one on that processor.
+            </p>
+
+            <p>
+                Apple operating systems, macOS and IOS have a different philosophy.  Apple operating system want to
+                restrict file types to each application for security reasons.  This goal called "sandboxing" makes
+                it difficult for macOS and IOS apps to share files.
+            </p>
+
+            <p>
+                On macOS or IOS, the user sees the file extension that seems to look just like Windows,
+                but behind the scenes, it is more complex using a Uniform Type Identifier, UTI, that
+                marks each file to specific application. Extensions are not meant to be shared.
+            </p>
+
+            <p>
+                Following Apple's rules for defining a file extension, UTI, can problematic when a
+                group wants to share the file type. This is what is happening to the wif extension
+                on Mac or IOS.  When multiple apps exist on a single device, only one of those apps can own
+                the file type.  The others can be easily locked out of opening files. This is especially
+                difficult when the type is universal and there is no specific owner of the format.
+            </p>
+            <p>
+                To continue the goal of wif to preserve weaving drafts for all, we need to create organizational UTI
+                for macOS and IOS so that all apps that use it can share files as the .wif format was intended.
+            </p>
+
+            <p>
+                The following link presents the requirements and additional code needed to share on macOS or IOS. By adding this
+                code, weaving applications, websites, loom drivers, can continue to share and preserve weaving
+                drafts as was intended with the wif format that was created in 1990's.
+            </p>
+            <p align="center">
+                <b><a href="codeForDevelopers.html">macOS Code for Developers</a></b>
+            </p>
+        </section>
+
+        <section>
+            <h2>The Future of WIF</h2>
+            <p>It is truly amazing that 
+                there is a way to maintain weaving drafts as different applications come and go and we
+                want to continue that ability in the future.  Most developers and users recognize a need for an 
+                updated version of wif, but as humans we have often different opinions.
+                The following link <a href="futureOfWif.html">Future Ideas For Wif</a> presents thoughts
+                on how this can be done.
+            </p>
+            
+        </section>
+
+        <section>
+            <h2>Contact</h2>
+            <p>
+                The purpose of this site is to make it easier to locate and manage the wif format.
+            </p>
+            <p>
+                For questions about this site, contact
+                <a href="mailto:canyonart@gmail.com">canyonart@gmail.com</a>.
+            </p>
+        </section>
+      
+
+    </main>
+
+<footer>
+    <div class="inner">
+        <p>WIF Specification — Copyright © 1997 Maple Hill Software</p>
+        <p>wif-format.org domain-name —Initially Maintained by Canyon Art, LLC</p>
+    </div>
+</footer>
+
+
+
+</body></html>

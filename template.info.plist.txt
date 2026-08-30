@@ -1,0 +1,95 @@
+<!-- ========================================================= -->
+<!--  DOCUMENT TYPE DECLARATION                                -->
+<!--  All apps should reference ONLY the shared UTI here.      -->
+<!-- ========================================================= -->
+
+<key>CFBundleDocumentTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeName</key>
+        <string>Weaving Information File</string>
+
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+
+        <key>CFBundleTypeRank</key>
+        <string>Default</string>
+
+        <key>LSItemContentTypes</key>		
+        <array>
+            <string>org.wif-format.wif</string>
+            <string>com.canyonart.weaveit.wif</string>  <!--temporary-->
+	    <string>com.fiberworks-pcw.wif</string>     <!--temporary-->
+	     <string>com.loftyfiber.wif</string>        <!--temporary-->
+        </array>
+    </dict>
+    < dict>
+        <key>CFBundleTypeName</key>
+        <string>your app description</string>
+
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+
+        <key>CFBundleTypeRank</key>
+        <string>Owner</string>
+
+        <key>LSItemContentTypes</key>		
+        <array>
+            <string>com.myApp.wif</string> <!-- replace with your UTI -->
+         </array>
+    </dict>
+
+
+</array><!-- ========================================================= -->
+<!--  SHARED WIF UTI (Canonical Owner)                         -->
+<!--  All apps should include this block exactly as written.   -->
+<!-- ========================================================= -->
+
+<key>UTExportedTypeDeclarations</key>
+<array>
+    <dict>
+        <key>UTTypeIdentifier</key>
+        <string>org.wif-format.wif</string>
+
+        <key>UTTypeDescription</key>
+        <string>WIF Weaving Information File</string>
+
+        <key>UTTypeConformsTo</key>
+        <array>
+            <string>public.data</string>
+        </array>
+
+        <key>UTTypeTagSpecification</key>
+        <dict>
+            <key>public.filename-extension</key>
+            <array>
+                <string>wif</string>
+            </array>
+        </dict>
+    </dict>
+</array>
+
+
+<!-- ========================================================= -->
+<!--  PRIVATE UTI (Developer should rename this identifier)    -->
+<!--  DO NOT declare the .wif extension here.                  -->
+<!--  Only conform to the shared UTI.                          -->
+<!-- ========================================================= -->
+
+<key>UTExportedTypeDeclarations</key>
+<array>
+    <dict>
+        <key>UTTypeIdentifier</key>
+        <string>com.yourcompany.yourapp.wif</string>
+
+        <key>UTTypeDescription</key>
+        <string>YourApp WIF File</string>
+
+        <key>UTTypeConformsTo</key>
+        <array>
+            <string>org.wif-format.wif</string>
+        </array>
+    </dict>
+</array>
+
+

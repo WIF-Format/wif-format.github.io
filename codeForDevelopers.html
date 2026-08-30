@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Info.plist — Code for Weaving Information File</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #222;
+            background: #fff;
+        }
+
+        header {
+            border-bottom: 1px solid #e5e5e5;
+            padding: 1rem 0;
+            <!-- margin-bottom: 2rem; -->
+        }
+
+            header .inner {
+                max-width: 760px;
+                margin: 0 auto;
+                padding: 0 2rem;
+            }
+
+            header h1 {
+                font-size: 25px;
+                font-weight: 600;
+                color: #111;
+            }
+
+            header p {
+                font-size: 15px;
+                color: #666;
+            }
+
+        main {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111;
+            <!-- margin-bottom: 1rem; -->
+            <!-- padding-bottom: 0.5rem; -->
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+
+        .spec-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            background: #2a6db5;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+            .spec-link:hover {
+                background: #1f5490;
+            }
+
+        .meta {
+            font-size: 14px;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+
+        .apps-list {
+            margin-left: 5rem;
+        }
+
+            .apps-list li {
+                font-size: 13px;
+                color: #333;
+                border-bottom: none;
+            }
+
+
+        footer {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            border-top: 1px solid #e5e5e5;
+            text-align: center;
+            font-size: 13px;
+            color: #999;
+        }
+
+            footer .inner {
+                max-width: 760px;
+                margin: 0 auto;
+                padding: 0 2rem;
+            }
+    </style>
+
+
+</head>
+<body>
+
+    <header>
+        <div class="inner">
+            <img src="detailscarf2.jpg" text-align:="" center="" width="760" height="100">
+            <h1>Developer Guide for Sharing wif Format on macOS</h1>
+
+        </div>
+    </header>
+
+    <main>
+
+        <h2><overview></overview></h2>
+
+        <p>
+            On macOS or IOS, the user sees the file extension that seems to look just like Windows,
+            but behind the scenes, it is more complex using a Uniform Type Identifier, UTI, that
+            marks each file to specific application. Extensions are not meant to be shared.
+        </p>
+        <p>
+            Since Apple doesn't provide a standard way to share a file extension for groups that don't
+            have a specific owner of the standard, we need a group way of adapting to a standard.  For wif,
+            that will require a two phase approach. The goal is to have a single UTI that we all declare for
+            out wif format.  With a single UTI, then all apps can open and save in that format.
+        </p>
+
+        <p>
+            Since there are already multiple apps that have defined the UTI using the Apple specification, a
+            two phased approach is needed to reach our goal for sharing. The diagram below shows an example of this
+            approach.
+        </p>
+        <h3>
+            UTI Hierarchy for WIF File Format
+        </h3>
+        <section>
+            <p>
+                Chart shows transitional hierarchy.  The private legacy UTI are needed to support customers until
+                all apps conform to the shared canonical UTI. Once that happens, then the second layer of declartions is
+                unnecessary. In the final phase, all apps declare the canonical UTI and don't need the others.
+            </p>
+            <pre>                        public.data
+                               │
+                               ▼
+                    org.wif-format.wif
+                 (shared canonical UTI)
+                               │
+        ┌──────────────────────┼──────────────────────┐...more Apps
+        ▼                      ▼                      ▼
+com.canyonart.weaveit.wif   com.fiberworks.wif   com.tempoweave.wif
+ (private legacy UTI)       (private legacy UTI) (private legacy UTI)
+        │                      │                      │
+        └────────────── conforms to ──────────────────┘
+</pre>
+
+        </section>
+        <section>
+            <p>
+                Explanation:
+                </p><ul>
+                    <li>public.data is the base type for structured data files.</li>
+                    <li> org.wif-format.wif is the single shared canonical UTI for .wif files.</li>
+                    <li> Each app retains its private UTI for backward compatibility.</li>
+                    <li> All private UTIs must conform to the shared UTI.</li>
+                    <li> Only the shared UTI declares the .wif extension.</li>
+                    <li> This structure prevents LaunchServices conflicts and stabilizes file associations.</li>
+                </ul>
+            <p></p>
+
+        </section>
+        <section>
+            <h2>Transitional Phase Requirements </h2>
+
+            <p>
+                Apps still have legacy private UTIs in the wild.
+            </p>
+            <p>
+                <b>Goal: Avoid breaking existing installs while moving toward the shared UTI</b>
+
+                </p><ul>
+                    <li>Export the shared UTI (`org.wif-format.wif`)</li>
+                    <li>Continue exporting your legacy private UTI</li>
+                    <li>Make your private UTI conform to the shared UTI (so you can open their legacy files)</li>
+                    <li>In CFBundleDocumentTypes, for LSItemContentTypes, you will need to list the other private UTIs</li>
+                </ul>
+            <p></p>
+
+            <p>
+                During the interm period until others have updated to org.wif-format.wif it is necessary to list all the apps
+                in the LSItemContentTypes  Once they have imported your UTI,
+                then this is not required.
+            </p>
+            <p>
+                During the transition period, private wif UTIs need to be listed as LSItemContentTypes of the shared UTI.
+                This enables all to be listed in "Open With". You don't need to list your own if you export it. 
+                Once all these apps have added org.wif-format.wif
+                to their declarations then it will not be necessary to list them. Of course, if more apps are involved, they will
+                need to be added to the list.
+                The current list of private UTIs that you should list are:
+                </p><ul>
+                    <li>com.fiberworks-pcw.wif</li>
+                    <li>com.canyonart.weaveit.wif</li>
+                    <li>com.loftyfiber.wif</li>
+                </ul>
+            <p></p>
+
+            <p><b>Do not import your own UTI.  There should only be either an export or import for a UTI.</b>
+
+
+
+            </p><p>
+                Each time a new app releases on Mac, the list will expand for all.
+                It is not clear who will win the LaunchServices priority and that can change with updates and new additions.
+            </p>
+            <p>
+                The final requirement is:  <b>Do Not call "LSSetDefaultRoleHandlerForContentType" in your applicationDidFinishingLaunching.</b>
+                This function sometimes works and other times not, and violates a user's ability to set the default app to open the wif file.
+            </p>
+        
+        </section>
+
+        <a class="spec-link" href="https://wif-format.org/code%20for%20info.plist.txt" target="_blank"> Download Transitional Code Example for Info.plist</a>
+        <br>
+        <p>
+            TIP: In Xcode, open the Info.plist as 'source code' to edit the xml.<br>
+            You can add any other keys that you use. This is the minimal set for sharing.<br>
+            Use the download link above for the code as the example below is full of html for your review.
+        </p>
+
+
+        <table align="center">
+            <tbody><tr>
+                <td>
+                    &lt;!-- ============================================== --&gt;<br>
+                    &lt;!-- DOCUMENT TYPES --&gt;<br>
+                    &lt;!-- Associates file types with your app in Finder --&gt;<br>
+                    &lt;!-- The list below only includes type for .wif --&gt;<br>
+                    &lt;!-- Add Bundle Types for your private file formats --&gt;<br>
+                    &lt;!-- You may want to add your NSDocumentClass for
+                    &lt;!--	reading the wif file.					 --&gt;<br>
+                    &lt;!-- ============================================== --&gt;<br>
+                    &lt;key&gt;CFBundleDocumentTypes&lt;/key&gt;<br>
+                    &lt;array&gt;
+                    &lt;!-- The shared WIF format --&gt;<br>
+                    &lt;dict&gt;<br>
+                    &nbsp;&lt;key&gt;CFBundleTypeName&lt;/key&gt;<br>
+                    &nbsp;&nbsp;	&lt;string&gt;Weaving Info Format&lt;/string&gt;<br>
+                    &nbsp;&lt;key&gt;CFBundleTypeRole&lt;/key&gt;<br>
+                    &nbsp;&nbsp;	&lt;string&gt;Editor&lt;/string&gt;<br>
+                    &nbsp;	 &lt;key&gt;CFBundleTypeRank&lt;/key&gt;<br>
+                    &nbsp;&nbsp;		&lt;string&gt;Default&lt;/string&gt;<br>
+                    &nbsp;&lt;key&gt;LSItemContentTypes&lt;/key&gt;<br>
+                    &nbsp;&nbsp;&lt;array&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&lt;string&gt;org.wif-format.wif&lt;/string&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&lt;string&gt;com.canyonart.weaveit.wif&lt;/string&gt;   &lt;!--Temporary--&gt;
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&lt;string&gt;com.fiberworks-pcw.wif&lt;/string&gt;  &lt;!--Temporary--&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&lt;string&gt;com.loftyfiber.wif&lt;/string&gt;  &lt;!--Temporary--&gt;<br>
+                    &nbsp;&nbsp;&lt;/array&gt;<br>
+                    &lt;/dict&gt;<br>
+
+                    &lt;!-- Your app's private format for wif --&gt;&lt;!--Temporary--&gt;<br>
+                    &lt;dict&gt;<br>
+                    &nbsp;&lt;key&gt;CFBundleTypeName&lt;/key&gt;<br>
+                    &nbsp;&nbsp;	&lt;string&gt;The App Weaving File&lt;/string&gt;<br>
+                    &nbsp;&lt;key&gt;CFBundleTypeRole&lt;/key&gt;<br>
+                    &nbsp;&nbsp;	&lt;string&gt;Editor&lt;/string&gt; &lt;!-- if only reading, then use Viewer --&gt;<br>
+                    &nbsp;	&lt;key&gt;CFBundleTypeRank&lt;/key&gt;<br>
+                    &nbsp;&nbsp;		 &lt;string&gt;Owner&lt;/string&gt; &lt;!-- You are owner of your format --&gt;<br>
+                    &nbsp;&lt;key&gt;LSItemContentTypes&lt;/key&gt;<br>
+                    &nbsp;&nbsp;&lt;array&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&lt;string&gt;com.myApp.wif&lt;/string&gt; &lt;!-- replace with your UTI --&gt;<br>
+                    &nbsp;&nbsp;&lt;/array&gt;<br>
+                    &lt;/dict&gt;<br>
+                    <br>
+
+
+                    &lt;!--Add Your app's private formats --&gt;<br>
+
+                    &lt;/array&gt;<br>
+                    <br>
+                    <br>
+                    &lt;!-- ============================================ --&gt;<br>
+                    &lt;!-- EXPORTED TYPE DECLARATIONS --&gt;<br>
+                    &lt;!-- Declares UTIs that your app owns --&gt;<br>
+                    &lt;!-- Both must be exported so they are recognized --&gt;<br>
+                    &lt;!-- on any device where your app is installed --&gt;<br>
+                    &lt;!-- This only shows the export for wif extension --&gt;<br>
+                    &lt;!-- ============================================ --&gt;<br>
+                    &lt;key&gt;UTExportedTypeDeclarations&lt;/key&gt;<br>
+                    &lt;array&gt;<br>
+                    <br>
+                    &lt;!-- Export the shared WIF format UTI --&gt;<br>
+                    &lt;!-- This ensures it is known on any --&gt;<br>
+                    &lt;!-- device with your app installed --&gt;<br>
+                    &lt;dict&gt;<br>
+                    &nbsp;&lt;key&gt;UTTypeIdentifier&lt;/key&gt;<br>
+                    &nbsp;&nbsp;	&lt;string&gt;org.wif-format.wif&lt;/string&gt;<br>
+                    &nbsp;&lt;key&gt;UTTypeDescription&lt;/key&gt;<br>
+                    &nbsp;&nbsp;	&lt;string&gt;Weaving Information File&lt;/string&gt;<br>
+                    &nbsp;&lt;key&gt;UTTypeConformsTo&lt;/key&gt;<br>
+                    &nbsp;&nbsp;&lt;array&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&lt;string&gt;public.data&lt;string&gt;<br>
+                    &nbsp;&nbsp;&lt;/array&gt;<br>
+                    &nbsp;&lt;key&gt;UTTypeTagSpecification&lt;/key&gt;<br>
+                    &nbsp;&nbsp;&lt;dict&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&lt;key&gt;public.filename-extension&lt;/key&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&lt;array&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;string&gt;wif&lt;/string&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&lt;/array&gt;<br>
+                    &nbsp;&nbsp; &lt;/dict&gt;<br>
+                    &lt;/dict&gt;<br>
+                    <br>
+                    &lt;!-- Export your app's private wif UTI --&gt;<br> <!--Temporary-->
+                    &lt;!-- which conforms to the shared --&gt;<br>
+                    &lt;!-- org.wif-format.wif UTI --&gt;<br>
+                    &lt;dict&gt;<br>
+                    &nbsp;&lt;key&gt;UTTypeIdentifier&lt;/key&gt;<br>
+                    &nbsp;&nbsp;&lt;string&gt;com.yourapp.wif&lt;/string&gt;<br>
+                    &nbsp;&lt;key&gt;UTTypeDescription&lt;/key&gt;<br>
+                    &nbsp;&nbsp;&lt;string&gt;Your App Wif File&lt;/string&gt;<br>
+                    &nbsp;&lt;key&gt;UTTypeConformsTo&lt;/key&gt;<br>
+                    &nbsp;&nbsp;&lt;array&gt;<br>
+                    &nbsp;&lt;string&gt;org.wif-format.wif&lt;/string&gt;<br> <!--Important-->
+                    &nbsp;&nbsp;&lt;/array&gt;<br>
+                    &nbsp;&lt;key&gt;UTTypeTagSpecification&lt;/key&gt;<br>
+                    &nbsp;&nbsp;&lt;dict&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&lt;key&gt;public.filename-extension&lt;/key&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&lt;array&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;string&gt;wif&lt;/string&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&lt;/array&gt;<br>
+                    &nbsp;&nbsp;&lt;/dict&gt;<br>
+                    &lt;/dict&gt;<br>
+                    &lt;/array&gt;<br>
+
+
+
+                </td>
+            </tr>
+
+        </tbody></table>
+
+        <section>
+            <h2>Final Phase Requirements </h2>
+
+            <p>
+                Once all the apps have exported the org.wif-format.wif UTI, life becomes much simpler.
+                The only file declaration need is the shared format, org.wif-format.wif.
+                The only export need is also org.wif-format.wif.  We will all be using the shared file type.
+                The only reason for imports, might be for legacy files.
+            </p>
+
+            <p>The example code below if for the final phase.  It is full of html, so don't download this.</p>
+            <p>Download the above example and make changes to that code by removing temporary items.</p>
+
+
+            <table align="center">
+                <tbody><tr><td>
+    &lt;key&gt;CFBundleDocumentTypes&lt;/key&gt;<br>
+    &lt;array&gt;
+    &lt;!-- The shared WIF format --&gt;<br>
+    &lt;dict&gt;<br>
+    &nbsp;&lt;key&gt;CFBundleTypeName&lt;/key&gt;<br>
+    &nbsp;&nbsp;	&lt;string&gt;Weaving Info Format&lt;/string&gt;<br>
+    &nbsp;&lt;key&gt;CFBundleTypeRole&lt;/key&gt;<br>
+    &nbsp;&nbsp;	&lt;string&gt;Editor&lt;/string&gt;<br>
+    &nbsp;	 &lt;key&gt;CFBundleTypeRank&lt;/key&gt;<br>
+    &nbsp;&nbsp;		&lt;string&gt;Default&lt;/string&gt;<br>
+    &nbsp;&lt;key&gt;LSItemContentTypes&lt;/key&gt;<br>
+    &nbsp;&nbsp;&lt;array&gt;<br>
+    &nbsp;&nbsp;&nbsp;&lt;string&gt;org.wif-format.wif&lt;/string&gt;<br>
+    &nbsp;&nbsp;&lt;/array&gt;<br>
+    &lt;/dict&gt;<br>
+    &lt;/array&gt;
+
+    &lt;key&gt;UTExportedTypeDeclarations&lt;/key&gt;<br>
+    &lt;array&gt;<br>
+    <br>
+    &lt;!-- Export the shared WIF format UTI --&gt;<br>
+    &lt;!-- This ensures it is known on any --&gt;<br>
+    &lt;!-- device with your app installed --&gt;<br>
+    &lt;dict&gt;<br>
+    &nbsp;&lt;key&gt;UTTypeIdentifier&lt;/key&gt;<br>
+    &nbsp;&nbsp;	&lt;string&gt;org.wif-format.wif&lt;/string&gt;<br>
+    &nbsp;&lt;key&gt;UTTypeDescription&lt;/key&gt;<br>
+    &nbsp;&nbsp;	&lt;string&gt;Weaving Information File&lt;/string&gt;<br>
+    &nbsp;&lt;key&gt;UTTypeConformsTo&lt;/key&gt;<br>
+    &nbsp;&nbsp;&lt;array&gt;<br>
+    &nbsp;&nbsp;&nbsp;&lt;string&gt;public.data&lt;string&gt;<br>
+    &nbsp;&nbsp;&lt;/array&gt;<br>
+    &nbsp;&lt;key&gt;UTTypeTagSpecification&lt;/key&gt;<br>
+    &nbsp;&nbsp;&lt;dict&gt;<br>
+    &nbsp;&nbsp;&nbsp;&lt;key&gt;public.filename-extension&lt;/key&gt;<br>
+    &nbsp;&nbsp;&nbsp;&lt;array&gt;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;string&gt;wif&lt;/string&gt;<br>
+    &nbsp;&nbsp;&nbsp;&lt;/array&gt;<br>
+    &nbsp;&nbsp; &lt;/dict&gt;<br>
+    &lt;/dict&gt;<br>
+    <br>
+
+
+</td></tr>
+        </tbody></table>
+
+  </section>
+        <section>
+            <h2>Final Thoughts</h2>
+            <p> This code was designed using multiple AI apps. Those apps are also very human like, because in
+            many places they disagreed slightly.  It took many detailed questions and many iterations for them to agree.
+            Hopefully we all will have a better understanding of what is needed.</p>
+
+            <p>I, Sally Breckenridge, did submit the transitional format and it does work. There is still much 
+            disagreement with the AI apps on how Apple's LaunchServices prioritizes app ownership. In the current
+            situation only one app wins.  But that is not always a win, because customers are then forced to decide
+            which version they want and delete the others. The newer apps tend to lose that choice as people don't like
+            change. Even if your app is the winner, tomorrow a new app may be launched to change that.  Take the time
+            to unite together as they did in 1997.</p>
+
+        </section>
+
+
+</main>
+
+    <footer>
+        <div class="inner">
+            <p>WIF Specification — Copyright © 1997 Maple Hill Software<br>
+            wif-format.org domain-name —Initially Maintained by Canyon Art, LLC</p>
+        </div>
+    </footer>
+
+
+
+
+</body></html>
